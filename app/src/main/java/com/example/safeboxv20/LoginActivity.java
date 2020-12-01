@@ -16,15 +16,26 @@ import com.amplifyframework.core.Amplify;
 public class LoginActivity extends Activity {
     private Button submit;                              //Submit button
     private EditText email, password;                   //Email, password text fields
-    private String useremail, userpassword = "";   //Email and password paramteres
+    private String useremail, userpassword = "";        //Email and password parameters
     private ImageView img;
     private boolean validUser;
+
+    private void switchContext(){
+        validUser = true;
+        final Intent intent = new Intent(this, DeviceScanActivity.class);
+        img.setImageResource(R.drawable.unlock_icon);
+        startActivity(intent);
+    }
+
+    //Print text to user
+    private void prompt(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        final Intent intent = new Intent(this, DeviceScanActivity.class);
 
         submit = findViewById(R.id.submit);             //Submit button
         email = findViewById(R.id.emailinput);          //Email text field
@@ -55,18 +66,10 @@ public class LoginActivity extends Activity {
                 Amplify.Auth.signIn(
                         useremail,
                         userpassword,
-                        result -> validUser = true,
-                        error -> prompt("Invalid username or password")
-                );
-
-                img.setImageResource(R.drawable.unlock_icon);
-                startActivity(intent);
+                        result -> switchContext(),
+                        error -> validUser = false
+                );      if(!validUser) prompt("Invalid username or password");
             }
         });
-    }
-
-    //Print text to user
-    private void prompt(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
