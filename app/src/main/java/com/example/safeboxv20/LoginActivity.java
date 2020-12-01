@@ -47,7 +47,7 @@ public class LoginActivity extends Activity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validUser = false;
+                validUser = true;
                 useremail = email.getText().toString();
                 userpassword = password.getText().toString();
 
@@ -67,7 +67,7 @@ public class LoginActivity extends Activity {
                         useremail,
                         userpassword,
                         result -> switchContext(),
-                        error -> validUser = false
+                        error -> img.setImageResource(R.drawable.locked_icon)
                 );      if(!validUser) prompt("Invalid username or password");
             }
         });
