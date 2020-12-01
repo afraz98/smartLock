@@ -2,20 +2,16 @@ package com.example.safeboxv20;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
+import com.amplifyframework.AmplifyException;
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
+import com.amplifyframework.core.Amplify;
 
 public class LoginActivity extends Activity {
     private Button submit;                              //Submit button
@@ -40,14 +36,31 @@ public class LoginActivity extends Activity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validUser = true;
+                validUser = false;
                 useremail = email.getText().toString();
                 userpassword = password.getText().toString();
 
-                if (validUser) {
-                    img.setImageResource(R.drawable.unlock_icon);
-                    startActivity(intent);
+
+
+                //Initialize Amplify application and Cognito Auth plugin
+                try {
+                    Amplify.addPlugin(new AWSCognitoAuthPlugin());
+                    Amplify.configure(getApplicationContext());
+                    Log.i("MyAmplifyApp", "Initialized Amplify");
+                } catch (AmplifyException error){
+                    error.printStackTrace();
                 }
+
+
+                Amplify.Auth.signIn(
+                        useremail,
+                        userpassword,
+                        result -> validUser = true,
+                        error -> prompt("Invalid username or password")
+                );
+
+                img.setImageResource(R.drawable.unlock_icon);
+                startActivity(intent);
             }
         });
     }

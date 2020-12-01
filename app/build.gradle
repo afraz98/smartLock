@@ -4,12 +4,22 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
+    compileOptions {
+            // Support for Java 8 features
+            coreLibraryDesugaringEnabled true
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "com.example.safeboxv20"
         minSdkVersion 20
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+
+        //Enable multidex support for AWS amplify
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -32,7 +42,12 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation ('com.amazonaws:aws-android-sdk-cognitoauth:2.9.+@aar') { transitive = true }
-    implementation 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.6.29'
-    implementation 'com.amazonaws:aws-android-sdk-core:2.6.29'
+    // Amplify core dependency
+    implementation 'com.amplifyframework:core:1.6.4'
+
+    // Support for Java 8 features
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
+
+    //AWS Cognito Auth
+    implementation 'com.amplifyframework:aws-auth-cognito:1.6.4'
 }

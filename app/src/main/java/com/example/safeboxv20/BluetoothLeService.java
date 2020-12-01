@@ -14,12 +14,11 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-
 import java.util.List;
 import java.util.UUID;
 
-public class BluetoothLEService extends Service {
-    private final static String TAG = BluetoothLEService.class.getSimpleName();
+public class BluetoothLeService extends Service {
+    private final static String TAG = BluetoothLeService.class.getSimpleName();
 
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -135,8 +134,8 @@ public class BluetoothLEService extends Service {
 
 
     public class LocalBinder extends Binder {
-        BluetoothLEService getService() {
-            return BluetoothLEService.this;
+        BluetoothLeService getService() {
+            return BluetoothLeService.this;
         }
     }
 
