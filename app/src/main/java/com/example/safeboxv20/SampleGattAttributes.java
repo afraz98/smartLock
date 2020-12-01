@@ -1,5 +1,4 @@
 package com.example.safeboxv20;
-
 import java.util.HashMap;
 
 public class SampleGattAttributes {

@@ -21,8 +21,6 @@ import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +48,7 @@ public class DeviceControlActivity extends Activity {
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
-    private BluetoothLeService mBluetoothLeService;
+    private BluetoothLEService mBluetoothLEService;
     private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =
             new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
     private boolean mConnected = false;
@@ -63,18 +61,18 @@ public class DeviceControlActivity extends Activity {
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
-            if (!mBluetoothLeService.initialize()) {
+            mBluetoothLEService = ((BluetoothLEService.LocalBinder) service).getService();
+            if (!mBluetoothLEService.initialize()) {
                 Log.e(TAG, "unable to initialize bluetooth");
                 finish();
             }
             // automatically connects to the device upon successful start-up initialization.
-            mBluetoothLeService.connect(mDeviceAddress);
+            mBluetoothLEService.connect(mDeviceAddress);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            mBluetoothLeService = null;
+            mBluetoothLEService = null;
         }
     };
 
@@ -88,23 +86,23 @@ public class DeviceControlActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
+            if (BluetoothLEService.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
                 updateConnectionState(R.string.connected);
                 invalidateOptionsMenu();
             }
-            else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
+            else if (BluetoothLEService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
                 updateConnectionState(R.string.disconnected);
                 invalidateOptionsMenu();
                 clearUI();
             }
-            else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+            else if (BluetoothLEService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // show all the supported devices and characteristics on the user interface
-                displayGattServices(mBluetoothLeService.getSupportedGattServices());
+                displayGattServices(mBluetoothLEService.getSupportedGattServices());
             }
-            else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+            else if (BluetoothLEService.ACTION_DATA_AVAILABLE.equals(action)) {
+                displayData(intent.getStringExtra(BluetoothLEService.EXTRA_DATA));
             }
         }
     };
@@ -123,15 +121,15 @@ public class DeviceControlActivity extends Activity {
                             // If there is an active notification on a characteristic, clear
                             // it first so it doesn't update the data field on the user interface.
                             if (mNotifyCharacteristic != null) {
-                                mBluetoothLeService.setCharacteristicNotification(
+                                mBluetoothLEService.setCharacteristicNotification(
                                         mNotifyCharacteristic, false);
                                 mNotifyCharacteristic = null;
                             }
-                            mBluetoothLeService.readCharacteristic(characteristic);
+                            mBluetoothLEService.readCharacteristic(characteristic);
                         }
                         if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                             mNotifyCharacteristic = characteristic;
-                            mBluetoothLeService.setCharacteristicNotification(
+                            mBluetoothLEService.setCharacteristicNotification(
                                     characteristic, true);
                         }
                         return true;
@@ -176,7 +174,7 @@ public class DeviceControlActivity extends Activity {
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+        Intent gattServiceIntent = new Intent(this, BluetoothLEService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
         //--------------------------------------pin pad Buttons------------------------------------------------------------
@@ -186,7 +184,7 @@ public class DeviceControlActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "here, about to send message---------------------------------------------------------------------1");
                 byte[] bytes = {1};
-                final BluetoothGattCharacteristic characteristic = mBluetoothLeService.writeCharacteristic();
+                final BluetoothGattCharacteristic characteristic = mBluetoothLEService.writeCharacteristic();
                 if (characteristic == null){
                     Log.d(TAG, "failed to send data, either the service or the characteristic" +
                             "was not found");
@@ -194,7 +192,7 @@ public class DeviceControlActivity extends Activity {
                 }
                 Log.d("in button one send: ", "value of bytes = " + bytes[0]);
                 characteristic.setValue(bytes);
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                mBluetoothLEService.writeCharacteristic(characteristic);
             }
         });
 
@@ -203,7 +201,7 @@ public class DeviceControlActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "here, about to send message---------------------------------------------------------------------2");
                 byte[] bytes = {2};
-                final BluetoothGattCharacteristic characteristic = mBluetoothLeService.writeCharacteristic();
+                final BluetoothGattCharacteristic characteristic = mBluetoothLEService.writeCharacteristic();
                 if (characteristic == null){
                     Log.d(TAG, "failed to send data, either the service or the characteristic" +
                             "was not found");
@@ -211,7 +209,7 @@ public class DeviceControlActivity extends Activity {
                 }
                 Log.d("in button TWO send: ", "value of bytes = " + bytes[0]);
                 characteristic.setValue(bytes);
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                mBluetoothLEService.writeCharacteristic(characteristic);
             }
         });
 
@@ -220,7 +218,7 @@ public class DeviceControlActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "here, about to send message---------------------------------------------------------------------3");
                 byte[] bytes = {3};
-                final BluetoothGattCharacteristic characteristic = mBluetoothLeService.writeCharacteristic();
+                final BluetoothGattCharacteristic characteristic = mBluetoothLEService.writeCharacteristic();
                 if (characteristic == null){
                     Log.d(TAG, "failed to send data, either the service or the characteristic" +
                             "was not found");
@@ -228,7 +226,7 @@ public class DeviceControlActivity extends Activity {
                 }
                 Log.d("in button THREE send: ", "value of bytes = " + bytes[0]);
                 characteristic.setValue(bytes);
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                mBluetoothLEService.writeCharacteristic(characteristic);
             }
         });
 
@@ -237,7 +235,7 @@ public class DeviceControlActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "here, about to send message---------------------------------------------------------------------4");
                 byte[] bytes = {4};
-                final BluetoothGattCharacteristic characteristic = mBluetoothLeService.writeCharacteristic();
+                final BluetoothGattCharacteristic characteristic = mBluetoothLEService.writeCharacteristic();
                 if (characteristic == null){
                     Log.d(TAG, "failed to send data, either the service or the characteristic" +
                             "was not found");
@@ -245,7 +243,7 @@ public class DeviceControlActivity extends Activity {
                 }
                 Log.d("in button FOUR send: ", "value of bytes = " + bytes[0]);
                 characteristic.setValue(bytes);
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                mBluetoothLEService.writeCharacteristic(characteristic);
             }
         });
 
@@ -254,7 +252,7 @@ public class DeviceControlActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "here, about to send message---------------------------------------------------------------------5");
                 byte[] bytes = {5};
-                final BluetoothGattCharacteristic characteristic = mBluetoothLeService.writeCharacteristic();
+                final BluetoothGattCharacteristic characteristic = mBluetoothLEService.writeCharacteristic();
                 if (characteristic == null){
                     Log.d(TAG, "failed to send data, either the service or the characteristic" +
                             "was not found");
@@ -262,7 +260,7 @@ public class DeviceControlActivity extends Activity {
                 }
                 Log.d("in button FIVE send: ", "value of bytes = " + bytes[0]);
                 characteristic.setValue(bytes);
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                mBluetoothLEService.writeCharacteristic(characteristic);
             }
         });
 
@@ -271,7 +269,7 @@ public class DeviceControlActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "here, about to send message---------------------------------------------------------------------6");
                 byte[] bytes = {6};
-                final BluetoothGattCharacteristic characteristic = mBluetoothLeService.writeCharacteristic();
+                final BluetoothGattCharacteristic characteristic = mBluetoothLEService.writeCharacteristic();
                 if (characteristic == null){
                     Log.d(TAG, "failed to send data, either the service or the characteristic" +
                             "was not found");
@@ -279,7 +277,7 @@ public class DeviceControlActivity extends Activity {
                 }
                 Log.d("in button SIX send: ", "value of bytes = " + bytes[0]);
                 characteristic.setValue(bytes);
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                mBluetoothLEService.writeCharacteristic(characteristic);
             }
         });
 
@@ -288,7 +286,7 @@ public class DeviceControlActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "here, about to send message---------------------------------------------------------------------7");
                 byte[] bytes = {7};
-                final BluetoothGattCharacteristic characteristic = mBluetoothLeService.writeCharacteristic();
+                final BluetoothGattCharacteristic characteristic = mBluetoothLEService.writeCharacteristic();
                 if (characteristic == null){
                     Log.d(TAG, "failed to send data, either the service or the characteristic" +
                             "was not found");
@@ -296,7 +294,7 @@ public class DeviceControlActivity extends Activity {
                 }
                 Log.d("in button SEVEN send: ", "value of bytes = " + bytes[0]);
                 characteristic.setValue(bytes);
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                mBluetoothLEService.writeCharacteristic(characteristic);
             }
         });
 
@@ -305,7 +303,7 @@ public class DeviceControlActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "here, about to send message---------------------------------------------------------------------8");
                 byte[] bytes = {8};
-                final BluetoothGattCharacteristic characteristic = mBluetoothLeService.writeCharacteristic();
+                final BluetoothGattCharacteristic characteristic = mBluetoothLEService.writeCharacteristic();
                 if (characteristic == null){
                     Log.d(TAG, "failed to send data, either the service or the characteristic" +
                             "was not found");
@@ -313,7 +311,7 @@ public class DeviceControlActivity extends Activity {
                 }
                 Log.d("in button EIGHT send: ", "value of bytes = " + bytes[0]);
                 characteristic.setValue(bytes);
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                mBluetoothLEService.writeCharacteristic(characteristic);
             }
         });
 
@@ -322,7 +320,7 @@ public class DeviceControlActivity extends Activity {
             public void onClick(View v) {
                 Log.d(TAG, "here, about to send message---------------------------------------------------------------------9");
                 byte[] bytes = {9};
-                final BluetoothGattCharacteristic characteristic = mBluetoothLeService.writeCharacteristic();
+                final BluetoothGattCharacteristic characteristic = mBluetoothLEService.writeCharacteristic();
                 if (characteristic == null){
                     Log.d(TAG, "failed to send data, either the service or the characteristic" +
                             "was not found");
@@ -330,7 +328,7 @@ public class DeviceControlActivity extends Activity {
                 }
                 Log.d("in button NINE send: ", "value of bytes = " + bytes[0]);
                 characteristic.setValue(bytes);
-                mBluetoothLeService.writeCharacteristic(characteristic);
+                mBluetoothLEService.writeCharacteristic(characteristic);
             }
         });
     }
@@ -339,8 +337,8 @@ public class DeviceControlActivity extends Activity {
     protected void onResume() {
         super.onResume();
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-        if (mBluetoothLeService != null){
-            final boolean result = mBluetoothLeService.connect(mDeviceAddress);
+        if (mBluetoothLEService != null){
+            final boolean result = mBluetoothLEService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result =" + result);
         }
     }
@@ -355,7 +353,7 @@ public class DeviceControlActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         unbindService(mServiceConnection);
-        mBluetoothLeService = null;
+        mBluetoothLEService = null;
     }
 
     @Override
@@ -376,10 +374,10 @@ public class DeviceControlActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_connect:
-                mBluetoothLeService.connect(mDeviceAddress);
+                mBluetoothLEService.connect(mDeviceAddress);
                 return true;
             case R.id.menu_disconnect:
-                mBluetoothLeService.disconnect();
+                mBluetoothLEService.disconnect();
                 return true;
             case android.R.id.home:
                 onBackPressed();
@@ -457,10 +455,10 @@ public class DeviceControlActivity extends Activity {
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
-        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        intentFilter.addAction(BluetoothLEService.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(BluetoothLEService.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(BluetoothLEService.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(BluetoothLEService.ACTION_DATA_AVAILABLE);
         return intentFilter;
     }
 }

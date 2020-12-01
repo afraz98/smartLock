@@ -17,38 +17,12 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.Chal
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 
-public class Login extends Activity {
-    private Button submit;              //Submit button
-    private EditText email, password;   //Email, password parameters
-    private String useremail = "", userpassword = "";
+public class LoginActivity extends Activity {
+    private Button submit;                              //Submit button
+    private EditText email, password;                   //Email, password text fields
+    private String useremail, userpassword = "";   //Email and password paramteres
     private ImageView img;
     private boolean validUser;
-
-    final AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
-        @Override
-        public void onSuccess(CognitoUserSession session, CognitoDevice device){ validUser = true; }
-
-        @Override
-        public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String userId) {
-            AuthenticationDetails d = new AuthenticationDetails(userId, userpassword, null);
-            authenticationContinuation.setAuthenticationDetails(d);
-            authenticationContinuation.continueTask();
-        }
-
-        @Override
-        public void getMFACode(MultiFactorAuthenticationContinuation continuation) { }
-
-        @Override
-        public void authenticationChallenge(ChallengeContinuation continuation) { }
-
-        @Override
-        public void onFailure(Exception exception) { prompt("Invalid password or email. Please try again."); }
-    };
-
-    private void authenticateUser(){
-        CognitoUser u = Cognito.getUserPool().getUser(useremail);
-        u.getSessionInBackground(authenticationHandler);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,20 +30,20 @@ public class Login extends Activity {
         setContentView(R.layout.login);
         final Intent intent = new Intent(this, DeviceScanActivity.class);
 
-        submit = findViewById(R.id.submit);
-        email = findViewById(R.id.emailinput);
-        password = findViewById(R.id.passwordinput);
+        submit = findViewById(R.id.submit);             //Submit button
+        email = findViewById(R.id.emailinput);          //Email text field
+        password = findViewById(R.id.passwordinput);    //Password text field
+
         img = findViewById(R.id.loginicon);
         img.setImageResource(R.drawable.login_icon);
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validUser = false;
+                validUser = true;
                 useremail = email.getText().toString();
                 userpassword = password.getText().toString();
 
-                authenticateUser();
                 if (validUser) {
                     img.setImageResource(R.drawable.unlock_icon);
                     startActivity(intent);
@@ -78,6 +52,7 @@ public class Login extends Activity {
         });
     }
 
+    //Print text to user
     private void prompt(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }

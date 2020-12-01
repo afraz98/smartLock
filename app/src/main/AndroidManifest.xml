@@ -23,9 +23,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Holo.Light">
-        <!--android:theme="@style/AppTheme"-->
 
-        <activity android:name=".Login"
+        <activity android:name=".LoginActivity"
             android:label = "@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,6 +32,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".DeviceScanActivity"/>
-        <service android:name=".BluetoothLeService" android:enabled="true"/>
+        <service android:name=".BluetoothLEService" android:enabled="true"/>
     </application>
 </manifest>

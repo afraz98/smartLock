@@ -5,13 +5,16 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
 import com.amazonaws.regions.Regions;
 
 public class Cognito {
-    private static String userPoolId = "us-west-2_PTBuogrDY";
-    private static String clientId = "5sodoburchn7kccl19raggb8sb";
-    private static String clientSecret = "1civolcbi8i9tun7krib26ks3qrjff1665a5f4jkcqsopcnd1e49";
-    private static Regions cognitoRegion = Regions.US_WEST_2;
-    private static Context cxt;
+    private String userPoolId = "us-west-2_PTBuogrDY";
+    private String clientId = "5sodoburchn7kccl19raggb8sb";
+    private String clientSecret = "1civolcbi8i9tun7krib26ks3qrjff1665a5f4jkcqsopcnd1e49";
+    private Context context;
 
-    public static CognitoUserPool getUserPool(){
-        return new CognitoUserPool(cxt, userPoolId, clientId, clientSecret, cognitoRegion);
+    public Cognito(Context context){
+        this.context = context;
+    }
+
+    public CognitoUserPool getUserPool(){
+        return new CognitoUserPool(context, userPoolId, clientId, clientSecret, Regions.US_WEST_2);
     }
 }
