@@ -1,9 +1,15 @@
 package com.example.safeboxv20;
+
 import android.app.Activity;
+
 import android.content.Intent;
+
 import android.os.Bundle;
+
 import android.util.Log;
+
 import android.view.View;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -40,7 +46,6 @@ public class LoginActivity extends Activity {
         submit = findViewById(R.id.submit);             //Submit button
         email = findViewById(R.id.emailinput);          //Email text field
         password = findViewById(R.id.passwordinput);    //Password text field
-
         img = findViewById(R.id.loginicon);
         img.setImageResource(R.drawable.login_icon);
 
@@ -50,8 +55,6 @@ public class LoginActivity extends Activity {
                 validUser = true;
                 useremail = email.getText().toString();
                 userpassword = password.getText().toString();
-
-
 
                 //Initialize Amplify application and Cognito Auth plugin
                 try {
@@ -68,7 +71,7 @@ public class LoginActivity extends Activity {
                         userpassword,
                         result -> switchContext(),
                         error -> img.setImageResource(R.drawable.locked_icon)
-                );      if(!validUser) prompt("Invalid username or password");
+                );
             }
         });
     }

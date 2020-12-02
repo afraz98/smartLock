@@ -17,8 +17,8 @@ import android.util.Log;
 import java.util.List;
 import java.util.UUID;
 
-public class BluetoothLeService extends Service {
-    private final static String TAG = BluetoothLeService.class.getSimpleName();
+public class BluetoothLEService extends Service {
+    private final static String TAG = BluetoothLEService.class.getSimpleName();
 
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -134,8 +134,8 @@ public class BluetoothLeService extends Service {
 
 
     public class LocalBinder extends Binder {
-        BluetoothLeService getService() {
-            return BluetoothLeService.this;
+        BluetoothLEService getService() {
+            return BluetoothLEService.this;
         }
     }
 
@@ -176,15 +176,14 @@ public class BluetoothLeService extends Service {
     }
 
     /**
-     * Connects to the GATT server hosted on the Bluetooth LE device.
-     *
+     * Connects to the GATT server hosted on the Bluetooth LE device
      * @param address The device address of the destination device.
-     *
      * @return Return true if the connection is initiated successfully. The connection result
      *         is reported asynchronously through the
      *         {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
      *         callback.
      */
+
     public boolean connect(final String address) {
         if (mBluetoothAdapter == null || address == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or the address is unspecified.");
