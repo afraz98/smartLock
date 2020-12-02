@@ -51,8 +51,6 @@ public class LoginActivity extends Activity {
                 useremail = email.getText().toString();
                 userpassword = password.getText().toString();
 
-
-
                 //Initialize Amplify application and Cognito Auth plugin
                 try {
                     Amplify.addPlugin(new AWSCognitoAuthPlugin());
