@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.safeboxv20"
+        applicationId "com.application.safebox"
         minSdkVersion 20
         targetSdkVersion 30
         versionCode 1
