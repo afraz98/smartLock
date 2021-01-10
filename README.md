@@ -2,6 +2,7 @@
 Smartbox Mobile Application
 
 Bluetooth Developer -- Jorge Cordon
+
 Amazon Cloud Developer -- Anthony Frazier
 
 ## Description
